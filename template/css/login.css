@@ -1,0 +1,51 @@
+/*后台页面样式*/
+.admin-h1{
+    text-align: center;
+}
+.nav{
+    height: 40px;
+    line-height: 40px;
+    background-color: black;
+}
+.nav a{
+    color: white;
+}
+.btn{
+    padding: 3px 6px;
+}
+#table tr{
+    height: 40px;
+}
+#table th, #table td{
+    width: 16.77%;
+    padding: 10px 0;
+    font-size: 16px;
+}
+/*添加用户 编辑用户 面板*/
+#addUser, #editUser{
+    width: 300px;
+    height: 298px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    -webkit-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    z-index: 1;
+    background-color: white;
+    display: none;
+}
+#addUser .row, #editUser .row{
+    height: 45px;
+}
+
+#addUser .col-md-4, #editUser .col-md-4{
+    text-align: right;
+}
+#addUser .col-md-8, #editUser .col-md-8{
+    padding-left: 0;
+}
+#addUser .panel-title, #editUser .panel-title{
+    background-color: #16a085;
+    color: white;
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>register</title>
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+<body>
+<div class="wrap">
+    <div class="dialog">
+        <div class="dialog_title">
+            <span class="title">管理员注册</span>
+        </div>
+        <ul class="dialog-content">
+            <li><label><span class="sp_ipt">用户名：</span><input type="text" id="username"></label></li>
+            <li><label><span class="sp_ipt">密码：</span><input type="password" id="password"></label></li>
+            <li><label><span class="sp_ipt">确认密码：</span><input type="password" id="rePassword"></label></li>
+            <li><button class="register">注册</button><button class="cancel">取消</button></li>
+        </ul>
+    </div>
+</div>
+<script type="text/javascript" src="js/ajax.js"></script>
+<script type="text/javascript">
+    const oSpan = document.getElementsByClassName('sp_ipt::before');
+    const oUsername = document.getElementById('username');
+    const oPassword = document.getElementById('password');
+    const oRePassword = document.getElementById('rePassword');
+    const oBtn1 = document.getElementsByClassName('register')[0];
+    const oBtn2 = document.getElementsByClassName('cancel')[0];
+    oBtn1.onclick = function () {
+        if(oUsername.value === '' || oPassword.value === ''){
+            alert("用户名或密码不能为空");
+        }else if(oPassword.value !== oRePassword.value){
+            alert('两次密码输入不同');
+        }else {
+            ajax({
+                method:'post',
+                url:'/newManage',
+                data:'username='+oUsername.value+'&password='+oPassword.value+'&rePassword='+oRePassword.value,
+                success:function (str) {
+                    let res_obj = JSON.parse(str);
+                    if(res_obj.status === 0){
+                        window.location.href = 'login.html';
+                    }else {
+                        alert(res_obj.message);
+                    }
+                }
+            });
+        }
+    };
+    oBtn2.onclick = function () {
+        window.location.href = 'login.html';
+    }
+</script>
+</body>
+</html>

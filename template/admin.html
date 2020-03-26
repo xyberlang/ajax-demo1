@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>userInfo</title>
+    <link rel="stylesheet" href="./css/simplecss.css">
+    <link rel="stylesheet" href="./css/login.css">
+    <script src="./js/ajax.js"></script>
+</head>
+<body>
+<div class="nav">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10">
+                <a href="admin.html">后台管理系统</a>
+                <a href="" class="btn btn-success" id="add-btn">添加用户</a>
+            </div>
+            <div class="col-md-2"><a href="logout.html">退出系统</a></div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-bordered" id="table">
+                <tr>
+                    <th>客户编号</th>
+                    <th>姓名</th>
+                    <th>邮箱</th>
+                    <th>电话</th>
+                    <th>QQ</th>
+                    <th>操作</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<!--添加用户panel-->
+<div class="panel panel-default" id="addUser">
+    <div class="panel-heading">
+        <div class="panel-title">添加用户</div>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-3">姓名:</div>
+            <div class="col-md-9"><label for="username"></label><input type="text" id="username"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">邮箱:</div>
+            <div class="col-md-9"><label for="email"></label><input type="text" id="email"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">电话:</div>
+            <div class="col-md-9"><label for="phone"></label><input type="text" id="phone"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">QQ:</div>
+            <div class="col-md-9"><label for="qq"></label><input type="text" id="qq"></div>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary" id="save-btn">保存</button>
+        <button class="btn btn-primary" id="cancel-btn">取消</button>
+    </div>
+</div>
+
+<!--编辑用户 panel-->
+<div class="panel panel-default" id="editUser">
+    <div class="panel-heading">
+        <div class="panel-title">编辑用户信息</div>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-3">姓名:</div>
+            <div class="col-md-9"><label for="edit-username"></label><input type="text" id="edit-username"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">邮箱:</div>
+            <div class="col-md-9"><label for="edit-email"></label><input type="text" id="edit-email"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">电话:</div>
+            <div class="col-md-9"><label for="edit-phone"></label><input type="text" id="edit-phone"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">QQ:</div>
+            <div class="col-md-9">
+                <label for="edit-qq"></label><input type="text" id="edit-qq">
+                <input type="hidden" id="edit-id">
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <button class="btn btn-primary" id="edit-save-btn">保存</button>
+        <button class="btn btn-primary" id="edit-cancel-btn">取消</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    const AddBtn = document.getElementById('add-btn');//添加用户按钮
+    const AddUser = document.getElementById('addUser');//添加用户面板
+    const SaveBtn = document.getElementById('save-btn');//添加用户面板--保存
+    const CancelBtn = document.getElementById('cancel-btn');//添加用户面板--取消
+    const AddUserInput = AddUser.getElementsByTagName('input');//添加用户面板--input
+    const Table = document.getElementById('table');
+
+    const UserList = document.getElementsByClassName('user-list');//用户列表table
+    const EditUser = document.getElementById('editUser');//编辑用户面板
+    const EditInput = EditUser.getElementsByTagName('input');//编辑用户面板--input
+    const EditSave = document.getElementById('edit-save-btn');//编辑用户面板--保存
+    const EditCancel = document.getElementById('edit-cancel-btn');//编辑用户面板--取消
+
+    showInList();
+
+    // 添加用户
+    AddBtn.onclick = function (e) {
+        e = e || window.event;
+        e.preventDefault(); //阻止a标签的默认行为
+        AddUser.style.display = 'block';
+    };
+    // 添加用户面板--保存按钮 url=addUser
+    SaveBtn.onclick = function(){
+        let flag = true;
+        for(let i = 0;i < AddUserInput.length;i++){
+            if(!AddUserInput[i].value){
+                flag = false;
+                alert('请正确输入');
+                break;
+            }
+        }
+        if(flag){
+            ajax({
+                method: 'post',
+                url: '/addUser',
+                data: `name=${AddUserInput[0].value}&email=${AddUserInput[1].value}&phone=${AddUserInput[2].value}&qq=${AddUserInput[3].value}`,
+                success: function (str) {
+                    let res_obj = JSON.parse(str);
+                    if(res_obj.message){
+                        alert(res_obj.message);
+                    }else {
+                        AddUser.style.display = 'none';
+                        let Tr = document.createElement('tr');
+                         Tr.innerHTML = `<tr class="user-list">
+                                    <td>${res_obj[0].id}</td>
+                                    <td>${AddUserInput[0].value}</td>
+                                    <td>${AddUserInput[1].value}</td>
+                                    <td>${AddUserInput[2].value}</td>
+                                    <td>${AddUserInput[3].value}</td>
+                                    <td>
+                                        <button class="btn btn-default" id="edit">编辑</button>
+                                        <button class="btn btn-danger" id="delete">删除</button>
+                                    </td>
+                                </tr>`;
+                         Table.appendChild(Tr);
+                        // 清空输入的内容
+                        for(let i = 0;i < AddUserInput.length; i++){
+                            AddUserInput[i].value = '';
+                        }
+                    }
+                }
+            })
+        }
+    };
+    // 添加用户面板--取消按钮
+    CancelBtn.onclick = function(){
+        AddUser.style.display = 'none';
+        // 点击取消后清空输入的内容
+        for(let i = 0;i < AddUserInput.length; i++){
+            AddUserInput[i].value = '';
+        }
+    };
+
+    Table.onclick = function (ev) {
+        ev = ev || window.event;
+        // 编辑用户按钮--信息加载
+        if(ev.target.id === 'edit'){
+            EditUser.style.display = 'block';
+            let arr = ev.target.parentNode.parentNode.children;
+            for(let i = 0;i < 4;i++){
+                EditInput[i].value = arr[i+1].innerText;
+            }
+            EditInput[4].value = arr[0].innerText;
+        }
+        // 删除用户按钮 url=delete
+        if(ev.target.id === 'delete'){
+            let Tr = ev.target.parentNode.parentNode;
+            //请求数据库删除用户信息
+            ajax({
+                method: 'post',
+                url: '/deleteUser',
+                data: 'id='+Tr.children[0].innerText,
+                success: function (str) {
+                    let res_obj = JSON.parse(str);
+                    if(res_obj.status === 0){
+                        Table.removeChild(Tr);
+                        location.reload();
+                    }
+                    alert(res_obj.message);
+                }
+            })
+        }
+    };
+    //编辑用户面板--保存按钮
+    EditSave.onclick = function(){
+        let flag = true;
+        for(let i = 0;i < EditInput.length;i++){
+            if(!EditInput[i].value){
+                flag = false;
+                break;
+            }
+        }
+        if(flag){
+            ajax({
+                method: 'post',
+                url: '/editUser',
+                data: "id="+EditInput[4].value+"&name="+EditInput[0].value+"&email="+EditInput[1].value+
+                        "&phone="+EditInput[2].value+"&qq="+EditInput[3].value,
+                success: function (str) {
+                    let res_obj = JSON.parse(str);
+                    if(res_obj.status === 0){
+                        EditUser.style.display = 'none';
+                        // 点击取消后清空输入的内容
+                        for(let i = 0;i < EditInput.length; i++){
+                            EditInput[i].value = '';
+                        }
+                        location.reload();
+                    }else {
+                        alert(res_obj.message);
+                    }
+                }
+            })
+        }
+    };
+
+    //编辑用户面板--取消按钮
+    EditCancel.onclick = function () {
+        EditUser.style.display = 'none';
+        // 点击取消后清空输入的内容
+        for(let i = 0;i < EditInput.length; i++){
+            EditInput[i].value = '';
+        }
+    }
+
+    //显示数据库中的数据
+    function showInList(){
+        ajax({
+            method: 'get',
+            url: '/showList',
+            success: function (str) {
+                let res_obj = JSON.parse(str);
+                if(res_obj.status === 0){
+                    alert(res_obj.message);
+                    return;
+                }
+                for(let i = 0;i < res_obj.length;i++){
+                    let Tr = document.createElement('tr');
+                    Tr.innerHTML = `<tr class="user-list">
+                                <td>${res_obj[i].id}</td>
+                                <td>${res_obj[i].name}</td>
+                                <td>${res_obj[i].email}</td>
+                                <td>${res_obj[i].phone}</td>
+                                <td>${res_obj[i].qq}</td>
+                                <td>
+                                    <button class="btn btn-default" id="edit">编辑</button>
+                                    <button class="btn btn-danger" id="delete">删除</button>
+                                </td>
+                                </tr>`;
+                    Table.appendChild(Tr);
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>
